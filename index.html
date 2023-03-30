@@ -297,15 +297,156 @@
 
 <h3 id="6-2-分组聚合"><a href="#6-2-分组聚合" class="headerlink" title="6.2 分组聚合"></a>6.2 分组聚合</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 按class_id分组:</span><br><span class="line">SELECT COUNT(*) num FROM students GROUP BY class_id;</span><br><span class="line">// 执行这个查询，COUNT()的结果不再是一个，而是3个，这是因为，GROUP BY子句指定了按class_id分组，因此，执行该SELECT语句时，会把class_id相同的列先分组，再分别计算，因此，得到了3行结果。</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT class_id, COUNT(*) num FROM students GROUP BY class_id;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 按class_id分组:</span><br><span class="line">SELECT class_id, COUNT(*) num FROM students GROUP BY class_id;</span><br><span class="line"></span><br><span class="line">// 按class_id, gender分组:</span><br><span class="line">SELECT class_id, gender, COUNT(*) num FROM students GROUP BY class_id, gender;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 练习1：查出每个班级的平均分，结果集应当有3条记录:</span><br><span class="line">SELECT class_id,AVG(score) average FROM students GROUP BY class_id;</span><br><span class="line"></span><br><span class="line">// 练习2：查出每个班级男生和女生的平均分：</span><br><span class="line">SELECT class_id,gender,AVG(score) average FROM students GROUP BY class_id,gender;</span><br></pre></td></tr></table></figure>
+
+<h2 id="7、多表查询"><a href="#7、多表查询" class="headerlink" title="7、多表查询"></a>7、多表查询</h2><p>定义：从多张表同时查询数据。</p>
+<p>语法：SELECT * FROM &lt;表1&gt; &lt;表2&gt;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 同时从students表和classes表的“乘积”:</span><br><span class="line">SELECT * FROM students, classes;</span><br><span class="line">// tudents表的每一行与classes表的每一行都两两拼在一起返回</span><br></pre></td></tr></table></figure>
+
+<p>这种多表查询又称笛卡尔查询，使用笛卡尔查询时要非常小心，由于结果集是目标表的行数乘积，对两个各自有100行记录的表进行笛卡尔查询将返回1万条记录，对两个各自有1万行记录的表进行笛卡尔查询将返回1亿条记录。且id不好区分</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">// set alias：利用投影查询的“设置列的别名”来给两个表各自的id和name列起别名：</span><br><span class="line">SELECT</span><br><span class="line">    students.id sid,</span><br><span class="line">    students.name,</span><br><span class="line">    students.gender,</span><br><span class="line">    students.score,</span><br><span class="line">    classes.id cid,</span><br><span class="line">    classes.name cname</span><br><span class="line">FROM students, classes;</span><br><span class="line">// 多表查询时，要使用表名.列名这样的方式来引用列和设置别名，这样就避免了结果集的列名重复问题，或者是给表设置一个别名</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// FROM &lt;表名1&gt; &lt;别名1&gt;, &lt;表名2&gt; &lt;别名2&gt;</span><br><span class="line">// set table alias:</span><br><span class="line">SELECT</span><br><span class="line">    s.id sid,</span><br><span class="line">    s.name,</span><br><span class="line">    s.gender,</span><br><span class="line">    s.score,</span><br><span class="line">    c.id cid,</span><br><span class="line">    c.name cname</span><br><span class="line">FROM students s, classes c;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 多表查询也是可以添加WHERE条件:set where clause:</span><br><span class="line">SELECT</span><br><span class="line">    s.id sid,</span><br><span class="line">    s.name,</span><br><span class="line">    s.gender,</span><br><span class="line">    s.score,</span><br><span class="line">    c.id cid,</span><br><span class="line">    c.name cname</span><br><span class="line">FROM students s, classes c</span><br><span class="line">WHERE s.gender = &#x27;M&#x27; AND c.id = 1;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用多表查询可以获取M x N行记录；</p>
+<p>多表查询的结果集可能非常巨大，要小心使用。</p>
+</blockquote>
+<h2 id="8、连接查询"><a href="#8、连接查询" class="headerlink" title="8、连接查询"></a>8、连接查询</h2><p>定义：多表查询的一种</p>
+<p>本质：连接查询对多个表进行JOIN运算，就是先确定一个主表作为结果集，然后，把其他表的行有选择性地“连接”在主表结果集上。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 选出所有学生：</span><br><span class="line">SELECT s.id,s.name,s.class_id,s.gender,s.score FROM studernts s;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-1-内连接"><a href="#8-1-内连接" class="headerlink" title="8.1 内连接"></a>8.1 内连接</h3><p>语法：SELECT … FROM &lt;表1&gt; INNER JOIN &lt;表2&gt; ON &lt;条件…&gt;</p>
+<p>特点：同时存在于两张表的行数据</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 选出所有学生，同时返回班级名称：</span><br><span class="line">SELECT s.id,s.name,s.class_id,s.gender,s.score FROM studernts s</span><br><span class="line">INNER JOIN classes c</span><br><span class="line">ON s.class_id = c.id;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>INNER JOIN查询的写法：</li>
+</ul>
+<p>[^1、]: 先确定主表，仍然使用<code>FROM &lt;表1&gt;</code>的语法；<br>[^2、]: 再确定需要连接的表，使用<code>INNER JOIN &lt;表2&gt;</code>的语法；<br>[^3、]: 然后确定连接条件，使用<code>ON &lt;条件...&gt;</code>，这里的条件是<code>s.class_id = c.id</code>，表示<code>students</code>表的<code>class_id</code>列与<code>classes</code>表的<code>id</code>列相同的行需要连接；<br>[^4、]: 可选：加上<code>WHERE</code>子句、<code>ORDER BY</code>等子句。</p>
+<h3 id="8-2-外连接"><a href="#8-2-外连接" class="headerlink" title="8.2 外连接"></a>8.2 外连接</h3><p>语法： SELECT … FROM &lt;表1&gt; OUTER JOIN &lt;表2&gt; ON &lt;条件…&gt;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 使用OUTER JOIN：</span><br><span class="line">SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score</span><br><span class="line">FROM students s</span><br><span class="line">RIGHT OUTER JOIN classes c</span><br><span class="line">ON s.class_id = c.id;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>RIGHT OUTER JOIN</th>
+<th>LEFT OUTER JOIN</th>
+<th>FULL OUTER JOIN</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>区别</td>
+<td>返回右表都存在的行。如果某一行仅在右表存在，那么结果集就会以<code>NULL</code>填充剩下的字段。</td>
+<td>返回左表都存在的行。</td>
+<td>把两张表的所有记录全部选择出来，并且，自动把对方不存在的列填充为NULL：</td>
+</tr>
+</tbody></table>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 先增加一列class_id=5:</span><br><span class="line">INSERT INTO students (class_id, name, gender, score) values (5, &#x27;新生&#x27;, &#x27;M&#x27;, 88);</span><br><span class="line">// 使用LEFT OUTER JOIN：</span><br><span class="line">SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score</span><br><span class="line">FROM students s</span><br><span class="line">LEFT OUTER JOIN classes c</span><br><span class="line">ON s.class_id = c.id;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 使用FULL OUTER JOIN：</span><br><span class="line">SELECT s.id, s.name, s.class_id, c.name class_name, s.gender, s.score</span><br><span class="line">FROM students s</span><br><span class="line">FULL OUTER JOIN classes c</span><br><span class="line">ON s.class_id = c.id;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 查询语句：</span><br><span class="line">SELECT ... FROM tableA ??? JOIN tableB ON tableA.column1 = tableB.column2;</span><br></pre></td></tr></table></figure>
+
+<p>说明：</p>
+<p>我们把tableA看作左表，把tableB看成右表，那么INNER JOIN是选出两张表都存在的记录：</p>
+<p><img src="https://www.liaoxuefeng.com/files/attachments/1246892164662976/l" alt="inner-join"></p>
+<p>LEFT OUTER JOIN是选出左表存在的记录：</p>
+<p><img src="https://www.liaoxuefeng.com/files/attachments/1246893588481376/l" alt="left-outer-join"></p>
+<p>RIGHT OUTER JOIN是选出右表存在的记录：</p>
+<p><img src="https://www.liaoxuefeng.com/files/attachments/1246893609222688/l" alt="right-outer-join"></p>
+<p>FULL OUTER JOIN则是选出左右表都存在的记录：<img src="https://www.liaoxuefeng.com/files/attachments/1246893632359424/l" alt="full-outer-join"></p>
+<blockquote>
+<p>JOIN查询需要先确定主表，然后把另一个表的数据“附加”到结果集上；</p>
+<p>INNER JOIN是最常用的一种JOIN查询，它的语法是<code>SELECT ... FROM &lt;表1&gt; INNER JOIN &lt;表2&gt; ON &lt;条件...&gt;</code>；</p>
+<p>JOIN查询仍然可以使用<code>WHERE</code>条件和<code>ORDER BY</code>排序。</p>
+</blockquote>
+<h1 id="三、修改数据"><a href="#三、修改数据" class="headerlink" title="三、修改数据"></a>三、修改数据</h1><h2 id="3-1-INSERT"><a href="#3-1-INSERT" class="headerlink" title="3.1 INSERT"></a>3.1 INSERT</h2><p>语法：INSERT INTO &lt;表名&gt; (字段1, 字段2, …) VALUES (值1, 值2, …);</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 添加一条新记录：</span><br><span class="line">INSERT INTO students (class_id, name, gender, score) VALUES (2, &#x27;大牛&#x27;, &#x27;M&#x27;, 80);</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 一次性添加多条新记录：</span><br><span class="line">INSERT INTO students (class_id, name, gender, score) VALUES</span><br><span class="line">  (1, &#x27;大宝&#x27;, &#x27;M&#x27;, 87),</span><br><span class="line">  (2, &#x27;二宝&#x27;, &#x27;M&#x27;, 81);</span><br><span class="line"></span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>可向表中一次插入一条或多条记录</p>
+</blockquote>
+<h2 id="3-2-UPDATE"><a href="#3-2-UPDATE" class="headerlink" title="3.2 UPDATE"></a>3.2 UPDATE</h2><p>作用：更新数据库表中的记录。</p>
+<p>语法：UPDATE &lt;表名&gt; SET 字段1&#x3D;值1, 字段2&#x3D;值2, … WHERE …;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 更新id=1的记录：</span><br><span class="line">UPDATE students SET name=&#x27;大牛&#x27;, score=66 WHERE id=1;</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students WHERE id=1;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 更新多条记录：更新id=5,6,7的记录</span><br><span class="line">UPDATE students SET name=&#x27;小牛&#x27;, score=77 WHERE id&gt;=5 AND id&lt;=7;</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 更新字段时可以使用表达式：更新score&lt;80的记录</span><br><span class="line">UPDATE students SET score=score+10 WHERE score&lt;80;</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 如果WHERE条件没有匹配到任何记录，UPDATE语句不会报错，也不会有任何记录被更新：更新id=999的记录：</span><br><span class="line">UPDATE students SET score=100 WHERE id=999;</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UPDATE students SET score=60;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用<code>UPDATE</code>，我们就可以一次更新表中的一条或多条记录。</p>
+</blockquote>
+<h2 id="3-3-DELETE"><a href="#3-3-DELETE" class="headerlink" title="3.3 DELETE"></a>3.3 DELETE</h2><p>作用：删除数据库的记录</p>
+<p>语法：DELETE FROM &lt;表名&gt; WHERE …;</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 删除id=1的记录：</span><br><span class="line">DELETE FROM students WHERE id=1;</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">//  删除id=5,6,7的记录：</span><br><span class="line">DELETE FROM students WHERE id&gt;=5 AND id&lt;=7;</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 如果WHERE条件没有匹配到任何记录，DELETE语句不会报错，也不会有任何记录被删除：删除id=999的记录：</span><br><span class="line">DELETE FROM students WHERE id=999;</span><br><span class="line">-- 查询并观察结果:</span><br><span class="line">SELECT * FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DELETE FROM students;</span><br><span class="line">// 这时，整个表的所有记录都会被删除。所以，在执行DELETE语句时也要非常小心，最好先用SELECT语句来测试WHERE条件是否筛选出了期望的记录集，然后再用DELETE删除。</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>可以一次删除表中的一条或多条记录</p>
+</blockquote>
+<h1 id="四、MYSQL"><a href="#四、MYSQL" class="headerlink" title="四、MYSQL"></a>四、MYSQL</h1><h2 id="4-1-管理MYSQL"><a href="#4-1-管理MYSQL" class="headerlink" title="4.1 管理MYSQL"></a>4.1 管理MYSQL</h2><h3 id="4-1-1-可视化图形界面"><a href="#4-1-1-可视化图形界面" class="headerlink" title="4.1.1 可视化图形界面"></a>4.1.1 可视化图形界面</h3><p><a target="_blank" rel="noopener" href="https://dev.mysql.com/downloads/workbench/">MySQL Workbench</a>：可以用可视化的方式查询、创建和修改数据库表，但是，归根到底，MySQL Workbench是一个图形客户端，它对MySQL的操作仍然是发送SQL语句并执行。因此，本质上，MySQL Workbench和MySQL Client命令行都是客户端，和MySQL交互，唯一的接口就是SQL。</p>
+<h3 id="4-1-2-命令行操作"><a href="#4-1-2-命令行操作" class="headerlink" title="4.1.2 命令行操作"></a>4.1.2 命令行操作</h3><p>通过SSH远程连接时，只能使用SQL命令，所以，了解并掌握常用的SQL管理操作是必须的。</p>
+<h4 id="4-1-2-1-对数据库进行操作"><a href="#4-1-2-1-对数据库进行操作" class="headerlink" title="4.1.2.1 对数据库进行操作"></a>4.1.2.1 对数据库进行操作</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">// 列出所有数据库</span><br><span class="line">mysql&gt; SHOW DATABASES;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| information_schema |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| shici              |</span><br><span class="line">| sys                |</span><br><span class="line">| test               |</span><br><span class="line">| school             |</span><br><span class="line">+--------------------+</span><br><span class="line">// 其中，information_schema、mysql、performance_schema和sys是系统库，不要去改动它们。其他的是用户创建的数据库。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 创建数据库</span><br><span class="line">mysql&gt; CREATE DATABASE test;</span><br><span class="line">Query OK, 1 row affected (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 删除数据库</span><br><span class="line">mysql&gt; DROP DATABASE test;</span><br><span class="line">Query OK, 0 rows affected (0.01 sec)</span><br><span class="line">// 注意：删除一个数据库将导致该数据库的所有表全部被删除。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 切换为当前数据库</span><br><span class="line">mysql&gt; USE test;</span><br><span class="line">Database changed</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-1-2-2-对表进行操作"><a href="#4-1-2-2-对表进行操作" class="headerlink" title="4.1.2.2 对表进行操作"></a>4.1.2.2 对表进行操作</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// 列出当前数据库的所有表</span><br><span class="line">mysql&gt; SHOW TABLES;</span><br><span class="line">+---------------------+</span><br><span class="line">| Tables_in_test      |</span><br><span class="line">+---------------------+</span><br><span class="line">| classes             |</span><br><span class="line">| statistics          |</span><br><span class="line">| students            |</span><br><span class="line">| students_of_class1  |</span><br><span class="line">+---------------------+</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 查看表结构</span><br><span class="line">mysql&gt; DESC students;</span><br><span class="line">+----------+--------------+------+-----+---------+----------------+</span><br><span class="line">| Field    | Type         | Null | Key | Default | Extra          |</span><br><span class="line">+----------+--------------+------+-----+---------+----------------+</span><br><span class="line">| id       | bigint(20)   | NO   | PRI | NULL    | auto_increment |</span><br><span class="line">| class_id | bigint(20)   | NO   |     | NULL    |                |</span><br><span class="line">| name     | varchar(100) | NO   |     | NULL    |                |</span><br><span class="line">| gender   | varchar(1)   | NO   |     | NULL    |                |</span><br><span class="line">| score    | int(11)      | NO   |     | NULL    |                |</span><br><span class="line">+----------+--------------+------+-----+---------+----------------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">// 查看创建表的SQL语句</span><br><span class="line">mysql&gt; SHOW CREATE TABLE students;</span><br><span class="line">+----------+-------------------------------------------------------+</span><br><span class="line">| students | CREATE TABLE `students` (                             |</span><br><span class="line">|          |   `id` bigint(20) NOT NULL AUTO_INCREMENT,            |</span><br><span class="line">|          |   `class_id` bigint(20) NOT NULL,                     |</span><br><span class="line">|          |   `name` varchar(100) NOT NULL,                       |</span><br><span class="line">|          |   `gender` varchar(1) NOT NULL,                       |</span><br><span class="line">|          |   `score` int(11) NOT NULL,                           |</span><br><span class="line">|          |   PRIMARY KEY (`id`)                                  |</span><br><span class="line">|          | ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 |</span><br><span class="line">+----------+-------------------------------------------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 删除表</span><br><span class="line">mysql&gt; DROP TABLE students;</span><br><span class="line">Query OK, 0 rows affected (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 修改表：给students表新增一列birth</span><br><span class="line">ALTER TABLE students ADD COLUMN birth VARCHAR(10) NOT NULL;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 修改birth列，例如把列名改为birthday，类型改为VARCHAR(20)：</span><br><span class="line">ALTER TABLE students CHANGE COLUMN birth birthday VARCHAR(20) NOT NULL;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 删除列</span><br><span class="line">ALTER TABLE students DROP COLUMN birthday;</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-1-3-退出MYSQL"><a href="#4-1-3-退出MYSQL" class="headerlink" title="4.1.3 退出MYSQL"></a>4.1.3 退出MYSQL</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 使用EXIT命令退出MySQL</span><br><span class="line">mysql&gt; EXIT</span><br><span class="line">Bye</span><br><span class="line">// 注意EXIT仅仅断开了客户端和服务器的连接，MySQL服务器仍然继续运行。</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-2-实用SQL语句"><a href="#4-2-实用SQL语句" class="headerlink" title="4.2 实用SQL语句"></a>4.2 实用SQL语句</h2><h3 id="4-2-1-插入或替换"><a href="#4-2-1-插入或替换" class="headerlink" title="4.2.1 插入或替换"></a>4.2.1 插入或替换</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 若id=1的记录不存在，REPLACE语句将插入新记录，否则，当前id=1的记录将被删除，然后再插入新记录。 </span><br><span class="line">REPLACE INTO students (id, class_id, name, gender, score) VALUES (1, 1, &#x27;小明&#x27;, &#x27;F&#x27;, 99);</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-2-插入或更新"><a href="#4-2-2-插入或更新" class="headerlink" title="4.2.2 插入或更新"></a>4.2.2 插入或更新</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 插入一条新记录（INSERT），但如果记录已经存在，就更新该记录</span><br><span class="line">INSERT INTO ... ON DUPLICATE KEY UPDATE ...</span><br><span class="line"></span><br><span class="line">INSERT INTO students (id, class_id, name, gender, score) VALUES (1, 1, &#x27;小明&#x27;, &#x27;F&#x27;, 99) ON DUPLICATE KEY UPDATE name=&#x27;小明&#x27;, gender=&#x27;F&#x27;, score=99;</span><br><span class="line"></span><br><span class="line">// 若id=1的记录不存在，INSERT语句将插入新记录，否则，当前id=1的记录将被更新，更新的字段由UPDATE指定。</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-3-插入或忽略"><a href="#4-2-3-插入或忽略" class="headerlink" title="4.2.3 插入或忽略"></a>4.2.3 插入或忽略</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 插入一条新记录（INSERT），但如果记录已经存在，就啥事也不干直接忽略，此时，可以使用INSERT IGNORE INTO ...语句：</span><br><span class="line">INSERT IGNORE INTO students (id, class_id, name, gender, score) VALUES (1, 1, &#x27;小明&#x27;, &#x27;F&#x27;, 99);</span><br><span class="line"></span><br><span class="line">// 若id=1的记录不存在，INSERT语句将插入新记录，否则，不执行任何操作。</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-4-快照"><a href="#4-2-4-快照" class="headerlink" title="4.2.4 快照"></a>4.2.4 快照</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 如果想要对一个表进行快照，即复制一份当前表的数据到一个新表，可以结合CREATE TABLE和SELECT：对class_id=1的记录进行快照，并存储为新表students_of_class1:</span><br><span class="line">CREATE TABLE students_of_class1 SELECT * FROM students WHERE class_id=1;</span><br><span class="line"></span><br><span class="line">// 新创建的表结构和SELECT使用的表结构完全一致。</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-5-写入查询结果集"><a href="#4-2-5-写入查询结果集" class="headerlink" title="4.2.5 写入查询结果集"></a>4.2.5 写入查询结果集</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">// 如果查询结果集需要写入到表中，可以结合INSERT和SELECT，将SELECT语句的结果集直接插入到指定表中。</span><br><span class="line"></span><br><span class="line">// 创建一个统计成绩的表statistics，记录各班的平均成绩：</span><br><span class="line">CREATE TABLE statistics (</span><br><span class="line">    id BIGINT NOT NULL AUTO_INCREMENT,</span><br><span class="line">    class_id BIGINT NOT NULL,</span><br><span class="line">    average DOUBLE NOT NULL,</span><br><span class="line">    PRIMARY KEY (id)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">// 写入各班的平均成绩：</span><br><span class="line">INSERT INTO statistics (class_id, average) SELECT class_id, AVG(score) FROM students GROUP BY class_id;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&gt; SELECT * FROM statistics;</span><br><span class="line">+----+----------+--------------+</span><br><span class="line">| id | class_id | average      |</span><br><span class="line">+----+----------+--------------+</span><br><span class="line">|  1 |        1 |         86.5 |</span><br><span class="line">|  2 |        2 | 73.666666666 |</span><br><span class="line">|  3 |        3 | 88.333333333 |</span><br><span class="line">+----+----------+--------------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-2-6-强制使用指定索引"><a href="#4-2-6-强制使用指定索引" class="headerlink" title="4.2.6 强制使用指定索引"></a>4.2.6 强制使用指定索引</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">// 在查询的时候，数据库系统会自动分析查询语句，并选择一个最合适的索引。但是很多时候，数据库系统的查询优化器并不一定总是能使用最优索引。如果我们知道如何选择索引，可以使用FORCE INDEX强制查询使用指定的索引。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; SELECT * FROM students FORCE INDEX (idx_class_id) WHERE class_id = 1 ORDER BY id DESC;</span><br><span class="line"></span><br><span class="line">// 指定索引的前提是索引idx_class_id必须存在。</span><br></pre></td></tr></table></figure>
 
 
 
-<h2 id="7、多表查询"><a href="#7、多表查询" class="headerlink" title="7、多表查询"></a>7、多表查询</h2><h2 id="8、连接查询"><a href="#8、连接查询" class="headerlink" title="8、连接查询"></a>8、连接查询</h2>
+<h1 id="五、事务"><a href="#五、事务" class="headerlink" title="五、事务"></a>五、事务</h1><h2 id="5-1-开发集成"><a href="#5-1-开发集成" class="headerlink" title="5.1 开发集成"></a>5.1 开发集成</h2>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/29/MySQL/" data-id="clfugql8n0000mcr728n5bt65" data-title="MySQL" class="article-share-link">分享</a>
+      <a data-url="http://example.com/2023/03/29/MySQL/" data-id="clfuwbj7g0000n4r722yp92ma" data-title="MySQL" class="article-share-link">分享</a>
       
       
       
@@ -345,7 +486,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/22/vue2/" data-id="clfugql8s0002mcr7fkoudynh" data-title="vue2" class="article-share-link">分享</a>
+      <a data-url="http://example.com/2023/03/22/vue2/" data-id="clfuwbj7l0002n4r72l810hvq" data-title="vue2" class="article-share-link">分享</a>
       
       
       
@@ -396,7 +537,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/22/hello-world/" data-id="clfugql8r0001mcr7d1cb6teg" data-title="Hello World" class="article-share-link">分享</a>
+      <a data-url="http://example.com/2023/03/22/hello-world/" data-id="clfuwbj7k0001n4r7c3qn83fl" data-title="Hello World" class="article-share-link">分享</a>
       
       
       
