@@ -107,7 +107,44 @@
 <li>特点：允许一列有重复，只要不是所有主键列都重复即可</li>
 <li>尽量不使用，其关系表较为复杂</li>
 </ul>
-<h2 id="2、外键"><a href="#2、外键" class="headerlink" title="2、外键"></a>2、外键</h2><h2 id="3、索引"><a href="#3、索引" class="headerlink" title="3、索引"></a>3、索引</h2><h1 id="二、查询数据"><a href="#二、查询数据" class="headerlink" title="二、查询数据"></a>二、查询数据</h1><h2 id="1、基本查询"><a href="#1、基本查询" class="headerlink" title="1、基本查询"></a>1、基本查询</h2><p>SELECT 查询的结果是一个二维表 </p>
+<h2 id="2、外键"><a href="#2、外键" class="headerlink" title="2、外键"></a>2、外键</h2><p>将数据与另一张表进行关联</p>
+<ul>
+<li>实现：同故宫定义外键约束</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ALTER TABLE students</span><br><span class="line">ADD CONSTRAINT fk_class_id</span><br><span class="line">FOREIGN KEY (class_id)</span><br><span class="line">REFERENCES classes (id);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>外键约束的名称：fk_class_id</p>
+<p><code>FOREIGN KEY (class_id)</code>指定了<code>class_id</code>作为外键</p>
+<p><code>REFERENCES classes (id)</code>指定了这个外键将关联到<code>classes</code>表的<code>id</code>列（即<code>classes</code>表的主键）</p>
+</blockquote>
+<p>作用：通过定义外键约束，关系数据库可以保证无法插入无效的数据（正因为影响速度，大部分程序中不使用）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 删除一个外键约束</span><br><span class="line">ALTER TABLE students</span><br><span class="line">DROP FOREIGN KEY fk_class_id;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>删除外键约束并没有删除外键这一列。删除列是通过<code>DROP COLUMN ...</code>实现的</p>
+</blockquote>
+<p>一对多：通过一个表的外键关联到另一个表，我们可以定义出一对多关系</p>
+<p>多对多：多对多关系实际上是通过两个一对多关系实现的，即通过一个中间表，关联两个一对多关系，就形成了多对多关系</p>
+<blockquote>
+<p>总结：关系数据库通过外键可以实现一对多、多对多和一对一的关系。外键既可以通过数据库来约束，也可以不设置约束，仅依靠应用程序的逻辑来保证。</p>
+</blockquote>
+<h2 id="3、索引"><a href="#3、索引" class="headerlink" title="3、索引"></a>3、索引</h2><p>定义：是关系数据库中对某一列或多个列的值进行预排序的数据结构</p>
+<p>优点：可以让数据库系统不必扫描整个表，而是直接定位到符合条件的记录，加快了查询速度。（提高了查询效率）</p>
+<p>缺点：在插入、更新和删除记录时，需要同时修改索引，因此，索引越多，插入、更新和删除记录的速度就越慢。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 根据score列进行查询，就可以对score列创建索引</span><br><span class="line">ALTER TABLE students</span><br><span class="line">ADD INDEX idx_score (score);</span><br><span class="line"></span><br><span class="line">// 索引名称是任意的，索引如果有多列，可以在括号里依次写上</span><br><span class="line">ADD INDEX idx_name_score (name, score);</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>索引的效率取决于索引列的值是否散列，即该列的值如果越互不相同，那么索引效率越高</p>
+<p>对于主键，关系数据库会自动对其创建主键索引。使用主键索引的效率是最高的，因为主键会保证绝对唯一</p>
+</blockquote>
+<h3 id="3-1-唯一索引"><a href="#3-1-唯一索引" class="headerlink" title="3.1 唯一索引"></a>3.1 唯一索引</h3><p>不能作为主键</p>
+<blockquote>
+<p>通过对数据库表创建索引，可以提高查询速度。</p>
+<p>通过创建唯一索引，可以保证某一列的值具有唯一性。</p>
+<p>数据库索引对于用户和应用程序来说都是透明的。</p>
+</blockquote>
+<h1 id="二、查询数据"><a href="#二、查询数据" class="headerlink" title="二、查询数据"></a>二、查询数据</h1><h2 id="1、基本查询"><a href="#1、基本查询" class="headerlink" title="1、基本查询"></a>1、基本查询</h2><p>SELECT 查询的结果是一个二维表 </p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">// 查询所有</span><br><span class="line">SELECT * FROM &lt;表名&gt;</span><br><span class="line"></span><br><span class="line">// 测试数据库连接</span><br><span class="line">SELECT 100+200;或者是SELECT 1;</span><br></pre></td></tr></table></figure>
 
 <h2 id="2、条件查询"><a href="#2、条件查询" class="headerlink" title="2、条件查询"></a>2、条件查询</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM &lt;表名&gt; WHERE &lt;条件表达式&gt;</span><br></pre></td></tr></table></figure>
@@ -179,11 +216,96 @@
 <ul>
 <li>通过<code>WHERE</code>条件查询，可以筛选出符合指定条件的记录，而不是整个表的所有记录</li>
 </ul>
-<h2 id="3、投影查询"><a href="#3、投影查询" class="headerlink" title="3、投影查询"></a>3、投影查询</h2><h2 id="4、排序"><a href="#4、排序" class="headerlink" title="4、排序"></a>4、排序</h2><h2 id="5、分页查询"><a href="#5、分页查询" class="headerlink" title="5、分页查询"></a>5、分页查询</h2><h2 id="6、聚合查询"><a href="#6、聚合查询" class="headerlink" title="6、聚合查询"></a>6、聚合查询</h2><h2 id="7、多表查询"><a href="#7、多表查询" class="headerlink" title="7、多表查询"></a>7、多表查询</h2><h2 id="8、连接查询"><a href="#8、连接查询" class="headerlink" title="8、连接查询"></a>8、连接查询</h2>
+<h2 id="3、投影查询"><a href="#3、投影查询" class="headerlink" title="3、投影查询"></a>3、投影查询</h2><p>定义：只希望返回某些列的数据，而不是所有列的数据，我们可以用<code>SELECT 列1, 列2, 列3 FROM ...</code>，让结果集仅包含指定列。这种操作称为投影查询。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 从students表中返回id、score和name这三列：</span><br><span class="line">SELECT id, score, name FROM students;</span><br><span class="line">// 返回的结果集就只包含了我们指定的列，并且，结果集的列的顺序和原表可以不一样。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 给列起别名</span><br><span class="line">SELECT 列1 别名1, 列2 别名2, 列3 别名3 FROM ...</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 使用投影查询+WHERE条件</span><br><span class="line">SELECT id, score points, name FROM students WHERE gender = &#x27;M&#x27;;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用<code>SELECT *</code>表示查询表的所有列，使用<code>SELECT 列1, 列2, 列3</code>则可以仅返回指定列，这种操作称为投影。</p>
+<p><code>SELECT</code>语句可以对结果集的列进行重命名。</p>
+</blockquote>
+<h2 id="4、排序"><a href="#4、排序" class="headerlink" title="4、排序"></a>4、排序</h2><h3 id="4-1-主键排序"><a href="#4-1-主键排序" class="headerlink" title="4.1 主键排序"></a>4.1 主键排序</h3><p>查询结果集通常是按照<code>id</code>排序的，也就是根据主键排序。这也是大部分数据库的做法</p>
+<h3 id="4-2-升序（默认）"><a href="#4-2-升序（默认）" class="headerlink" title="4.2 升序（默认）"></a>4.2 升序（默认）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 按score从低到高  ASC</span><br><span class="line">SELECT id, name, gender, score FROM students ORDER BY score;</span><br><span class="line">SELECT id, name, gender, score FROM students ORDER BY score ASC;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-3-降序（倒序）"><a href="#4-3-降序（倒序）" class="headerlink" title="4.3 降序（倒序）"></a>4.3 降序（倒序）</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 按score从高到低  DESC</span><br><span class="line">SELECT id, name, gender, score FROM students ORDER BY score DESC;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-4-其他排序"><a href="#4-4-其他排序" class="headerlink" title="4.4 其他排序"></a>4.4 其他排序</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 如果score列有相同的数据，要进一步排序，可以继续添加列名。例如，使用ORDER BY score DESC, gender表示先按score列倒序，如果有相同分数的，再按gender列排序：</span><br><span class="line">// 按score, gender排序:</span><br><span class="line">SELECT id, name, gender, score FROM students ORDER BY score DESC, gender;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-5-存在WHERE子句"><a href="#4-5-存在WHERE子句" class="headerlink" title="4.5 存在WHERE子句"></a>4.5 存在WHERE子句</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 有WHERE子句，那么ORDER BY子句要放到WHERE子句后面。例如，查询一班的学生成绩，并按照倒序排序：</span><br><span class="line">// 带WHERE条件的ORDER BY:</span><br><span class="line">SELECT id, name, gender, score</span><br><span class="line">FROM students</span><br><span class="line">WHERE class_id = 1</span><br><span class="line">ORDER BY score DESC;</span><br><span class="line">// 结果集仅包含符合WHERE条件的记录，并按照ORDER BY的设定排序</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用<code>ORDER BY</code>可以对结果集进行排序；</p>
+<p>可以对多列进行升序、倒序排序。</p>
+</blockquote>
+<h2 id="5、分页查询"><a href="#5、分页查询" class="headerlink" title="5、分页查询"></a>5、分页查询</h2><h3 id="5-1-分页"><a href="#5-1-分页" class="headerlink" title="5.1 分页"></a>5.1 分页</h3><p>定义：分页实际上就是从结果集中“截取”出第M~N条记录。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LIMIT &lt;N-M&gt; OFFSET &lt;M&gt;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// 按score从高到低</span><br><span class="line">SELECT id, name, gender, score FROM students ORDER BY score DESC;</span><br><span class="line"></span><br><span class="line">// 查询第1页</span><br><span class="line">SELECT id, name, gender, score</span><br><span class="line">FROM students</span><br><span class="line">ORDER BY score DESC</span><br><span class="line">LIMIT 3 OFFSET 0;</span><br><span class="line">// 上述查询LIMIT 3 OFFSET 0表示，对结果集从0号记录开始，最多取3条。注意SQL记录集的索引从0开始。</span><br><span class="line"></span><br><span class="line">// 查询第2页 </span><br><span class="line">SELECT id, name, gender, score</span><br><span class="line">FROM students</span><br><span class="line">ORDER BY score DESC</span><br><span class="line">LIMIT 3 OFFSET 3;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>LIMIT</code>总是设定为<code>pageSize(每页条数)</code>；</p>
+<p><code>OFFSET</code>计算公式为<code>pageSize * (pageIndex【当前索引】 - 1)</code>。</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// OFFSET设定为20</span><br><span class="line">SELECT id, name, gender, score</span><br><span class="line">FROM students</span><br><span class="line">ORDER BY score DESC</span><br><span class="line">LIMIT 3 OFFSET 20;</span><br><span class="line"></span><br><span class="line">// OFFSET超过了查询的最大数量并不会报错，而是得到一个空的结果</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>OFFSET</code>是可选的，如果只写<code>LIMIT 15</code>，那么相当于<code>LIMIT 15 OFFSET 0</code>。</p>
+<p>在MySQL中，<code>LIMIT 15 OFFSET 30</code>还可以简写成<code>LIMIT 30, 15</code>。</p>
+<p>使用<code>LIMIT &lt;M&gt; OFFSET &lt;N&gt;</code>分页时，随着<code>N</code>越来越大，查询效率也会越来越低。</p>
+<p>使用<code>LIMIT &lt;M&gt; OFFSET &lt;N&gt;</code>可以对结果集进行分页，每次查询返回结果集的一部分；</p>
+<p>分页查询需要先确定每页的数量和当前页数，然后确定<code>LIMIT</code>和<code>OFFSET</code>的值。</p>
+</blockquote>
+<h2 id="6、聚合查询"><a href="#6、聚合查询" class="headerlink" title="6、聚合查询"></a>6、聚合查询</h2><h3 id="6-1-聚合"><a href="#6-1-聚合" class="headerlink" title="6.1 聚合"></a>6.1 聚合</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 使用聚合查询:</span><br><span class="line">SELECT COUNT(*) FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 使用聚合查询并设置结果集的列名为num:</span><br><span class="line">SELECT COUNT(*) num FROM students;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 使用聚合查询并设置WHERE条件:</span><br><span class="line">SELECT COUNT(*) boys FROM students WHERE gender = &#x27;M&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>除了<code>COUNT()</code>函数外，SQL还提供了如下聚合函数：</p>
+<table>
+<thead>
+<tr>
+<th align="left">函数</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">SUM</td>
+<td align="left">计算某一列的合计值，该列必须为数值类型</td>
+</tr>
+<tr>
+<td align="left">AVG</td>
+<td align="left">计算某一列的平均值，该列必须为数值类型</td>
+</tr>
+<tr>
+<td align="left">MAX</td>
+<td align="left">计算某一列的最大值</td>
+</tr>
+<tr>
+<td align="left">MIN</td>
+<td align="left">计算某一列的最小值</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><code>MAX()</code>和<code>MIN()</code>函数并不限于数值类型。如果是字符类型，<code>MAX()</code>和<code>MIN()</code>会返回排序最后和排序最前的字符。</p>
+<p>如果聚合查询的<code>WHERE</code>条件没有匹配到任何行，<code>COUNT()</code>会返回0，而<code>SUM()</code>、<code>AVG()</code>、<code>MAX()</code>和<code>MIN()</code>会返回<code>NULL</code>：</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// WHERE条件gender = &#x27;X&#x27;匹配不到任何行:</span><br><span class="line">SELECT AVG(score) average FROM students WHERE gender = &#x27;X&#x27;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-2-分组聚合"><a href="#6-2-分组聚合" class="headerlink" title="6.2 分组聚合"></a>6.2 分组聚合</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 按class_id分组:</span><br><span class="line">SELECT COUNT(*) num FROM students GROUP BY class_id;</span><br><span class="line">// 执行这个查询，COUNT()的结果不再是一个，而是3个，这是因为，GROUP BY子句指定了按class_id分组，因此，执行该SELECT语句时，会把class_id相同的列先分组，再分别计算，因此，得到了3行结果。</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SELECT class_id, COUNT(*) num FROM students GROUP BY class_id;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="7、多表查询"><a href="#7、多表查询" class="headerlink" title="7、多表查询"></a>7、多表查询</h2><h2 id="8、连接查询"><a href="#8、连接查询" class="headerlink" title="8、连接查询"></a>8、连接查询</h2>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/29/MySQL/" data-id="clft1dvuk00001or7h2em7ubp" data-title="MySQL" class="article-share-link">分享</a>
+      <a data-url="http://example.com/2023/03/29/MySQL/" data-id="clfugql8n0000mcr728n5bt65" data-title="MySQL" class="article-share-link">分享</a>
       
       
       
@@ -223,7 +345,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/22/vue2/" data-id="clft1dvup00021or7er5e6xdc" data-title="vue2" class="article-share-link">分享</a>
+      <a data-url="http://example.com/2023/03/22/vue2/" data-id="clfugql8s0002mcr7fkoudynh" data-title="vue2" class="article-share-link">分享</a>
       
       
       
@@ -274,7 +396,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2023/03/22/hello-world/" data-id="clft1dvun00011or7fxew5bvk" data-title="Hello World" class="article-share-link">分享</a>
+      <a data-url="http://example.com/2023/03/22/hello-world/" data-id="clfugql8r0001mcr7d1cb6teg" data-title="Hello World" class="article-share-link">分享</a>
       
       
       
